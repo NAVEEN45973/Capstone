@@ -33,7 +33,7 @@ const config = {
   authRequired: false,
   auth0Logout: true,
   secret: 'a long, randomly-generated string stored in env',
-  baseURL: 'http://localhost:3000',
+  baseURL: 'https://capstonevirtualtheater.herokuapp.com/',
   clientID: 'O3yTTmt3CIYWuWuN8EQzGqJGCHsCJ4uy',
   issuerBaseURL: 'https://naveen45973.us.auth0.com'
 };
