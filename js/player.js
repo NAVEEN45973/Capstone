@@ -189,9 +189,7 @@ socket.on('createVimeo', function(data) {
         document.getElementById('emptyButton').style.display = 'none'
         document.getElementById('nextButton').style.display = 'none'
         document.getElementById('loveButton').style.display = 'none'
-        // document.getElementById('html5-input').style.display = 'none'
         document.getElementById('inputVideoId').placeholder = 'Video ID / URL'
-        // document.getElementById('html5-message').style.display = 'none'
 
         // Special call to pause youtube player
         // Only have to do on youtube player as it is the default player that autoplays
@@ -224,53 +222,9 @@ socket.on('createHTML5', function(data) {
         document.getElementById('emptyButton').style.display = 'none'
         document.getElementById('nextButton').style.display = 'none'
         document.getElementById('loveButton').style.display = 'none'
-        // document.getElementById('html5-input').style.display = 'block'
         document.getElementById('inputVideoId').placeholder = 'Direct mp4/webm URL'
-        // document.getElementById('html5-message').style.display = 'block'
 
         betaAlert()
     }
 });
 
-
-// changeSinglePlayer(roomnum, playerId){
-//
-// 	return new Promise((resolve, reject) => {
-//         switch(playerId) {
-//             case 0:
-//                 if (currPlayer != 0){
-//                     // var playerIn = document.getElementById("playerArea")
-//                     // console.log(playerIn.innerHTML)
-//                     // playerIn.innerHTML = "<iframe id=\"player\"allowfullscreen=\"0\"width=\"640\" height=\"360\"src=\"https://www.youtube.com/embed/M7lc1UVf-VE?enablejsapi=1\"frameborder=\"0\"style=\"border: solid 4px #37474F\"></iframe>"
-//                     // onYouTubeIframeAPIReady()
-//
-//                     var daily = document.getElementById('dailyArea');
-//                     daily.style.display='none';
-//
-//                     var you = document.getElementById('playerArea');
-//                     you.style.display='block';
-//                     currPlayer = 0
-//
-//                 }
-//                 break;
-//             case 1:
-//                 if (currPlayer != 1) {
-//                 //     var playerIn = document.getElementById("playerArea")
-//                 //     console.log(playerIn.innerHTML)
-//                 //     playerIn.innerHTML = "<iframe id=\"player-daily\" frameborder=\"0\" width=\"640\" height=\"360\"src=\"//www.dailymotion.com/embed/video/x26m1j4\"allowfullscreen allow=\"autoplay\"></iframe>"
-//
-//                     var you = document.getElementById('playerArea');
-//                     you.style.display='none';
-//
-//                     var daily = document.getElementById('dailyArea');
-//                     daily.style.display='block';
-//                     currPlayer = 1
-//                     console.log("hey i am number 1")
-//                 }
-//                 break;
-//             default:
-//                 console.log("Error invalid player id")
-//         }
-//       })
-//
-// }

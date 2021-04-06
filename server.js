@@ -21,13 +21,7 @@ app.use(express.static(__dirname + '/'));
 server.listen(process.env.PORT || 3000);
 console.log('Server Started . . .');
 
-// app.param('room', function(req,res, next, room){
-//     console.log("testing")
-//     console.log(room)
-//     given_room = room
-// res.sendFile(__dirname + '/index.html');
-// });
-const { auth,requiresAuth } = require('express-openid-connect');
+/*const { auth,requiresAuth } = require('express-openid-connect');
 
 const config = {
   authRequired: false,
@@ -40,26 +34,11 @@ const config = {
 app.use(auth(config));
 app.get('/',requiresAuth(), (req, res) => {
     res.send(req.oidc.isAuthenticated() ? 'loggin': 'Logged out');
-  });
-app.get('/:room',requiresAuth(), function(req, res) {
+  });*/
+app.get('/:room', function(req, res) {
     given_room = req.params.room
     res.sendFile(__dirname + '/index.html',{ roomId: req.params.room });
 });
-
- 
-//var roomno = 1;
-/*
-io.on('connection', function(socket) {
-
-   //Increase roomno 2 clients are present in a room.
-   //if(io.nsps['/'].adapter.rooms["room-"+roomno] && io.nsps['/'].adapter.rooms["room-"+roomno].length > 1) roomno++;
-
-   // For now have it be the same room for everyone!
-   socket.join("room-"+roomno);
-
-   //Send this event to everyone in the room.
-   io.sockets.in("room-"+roomno).emit('connectToRoom', "You are in room no. "+roomno);
-})*/
 
 var roomno = 1;
 
@@ -72,17 +51,6 @@ io.sockets.on('connection', function(socket) {
     socket.emit('set id', {
         id: given_room
     })
-
-    // io.sockets.emit('broadcast',{ description: connections.length + ' clients connected!'});
-
-    // For now have it be the same room for everyone!
-    //socket.join("room-"+roomno);
-
-    //Send this event to everyone in the room.
-    //io.sockets.in("room-"+roomno).emit('connectToRoom', "You are in room no. "+roomno);
-
-    // reset url parameter
-    // Workaround because middleware was not working right
     socket.on('reset url', function(data) {
         given_room = ""
     });
@@ -98,15 +66,6 @@ io.sockets.on('connection', function(socket) {
 
         connections.splice(connections.indexOf(socket), 1);
         console.log(socket.id + ' Disconnected: %s sockets connected', connections.length);
-        // console.log(io.sockets.adapter.rooms['room-' + socket.roomnum])
-        // console.log(socket.roomnum)
-
-
-        // HOST DISCONNECT
-        // Need to check if current socket is the host of the roomnum
-        // If it is the host, needs to auto assign to another socket in the room
-
-        // Grabs room from userrooms data structure
         var id = socket.id
         var roomnum = userrooms[id]
         var room = io.sockets.adapter.rooms['room-' + roomnum]
@@ -121,9 +80,6 @@ io.sockets.on('connection', function(socket) {
                     roomnum: roomnum
                 })
             }
-
-            // Remove from users list
-            // If socket username is found
             if (room.users.indexOf(socket.username) != -1) {
                 room.users.splice((room.users.indexOf(socket.username)), 1);
                 updateRoomUsers(roomnum);
@@ -160,7 +116,6 @@ io.sockets.on('connection', function(socket) {
         }
 
         // Checks if the room exists or not
-        // console.log(io.sockets.adapter.rooms['room-' + socket.roomnum] !== undefined)
         if (io.sockets.adapter.rooms['room-' + socket.roomnum] === undefined) {
             socket.send(socket.id)
             // Sets the first socket to join as the host
@@ -169,7 +124,6 @@ io.sockets.on('connection', function(socket) {
 
             // Set the host on the client side
             socket.emit('setHost');
-            //console.log(socket.id)
         } else {
             console.log(socket.roomnum)
             host = io.sockets.adapter.rooms['room-' + socket.roomnum].host
@@ -276,49 +230,27 @@ io.sockets.on('connection', function(socket) {
 
         // Get time from host which calls change time for that socket
         if (socket.id != host) {
-            //socket.broadcast.to(host).emit('getTime', { id: socket.id });
+           
             console.log("call the damn host " + host)
 
             // Set a timeout so the video can load before it syncs
             setTimeout(function() {
                 socket.broadcast.to(host).emit('getData');
             }, 1000);
-            //socket.broadcast.to(host).emit('getData');
 
             // Push to users in the room
             io.sockets.adapter.rooms['room-' + socket.roomnum].users.push(socket.username)
-
-            // socket.emit('changeVideoClient', {
-            //     videoId: currVideo
-            // });
-
-            // This calls back the function on the host client
-            //callback(true)
-
-            // DISABLE CONTROLS - DEPRECATED
-            // socket.emit('hostControls');
         } else {
             console.log("I am the host")
-            //socket.emit('auto sync');
-
-            // Auto syncing is not working atm
-            // socket.broadcast.to(host).emit('auto sync');
         }
 
         // Update online users
         updateRoomUsers(socket.roomnum)
-
-        // This is all of the rooms
-        // io.sockets.adapter.rooms['room-1'].currVideo = "this is the video"
-        // console.log(io.sockets.adapter.rooms['room-1']);
     });
     // ------------------------------------------------------------------------
 
-
-
-    // ------------------------------------------------------------------------
     // ------------------------- Socket Functions -----------------------------
-    // ------------------------------------------------------------------------
+  
 
     // Play video
     socket.on('play video', function(data) {
@@ -344,11 +276,6 @@ io.sockets.on('connection', function(socket) {
         socket.broadcast.to("room-" + roomnum).emit('justSeek', {
             time: currTime
         });
-
-        // Sync up
-        // host = io.sockets.adapter.rooms['room-' + roomnum].host
-        // console.log("let me sync "+host)
-        // socket.broadcast.to(host).emit('getData');
     });
 
     socket.on('play next', function(data, callback) {
@@ -378,14 +305,12 @@ io.sockets.on('connection', function(socket) {
                     break;
                 default:
                     console.log("Error invalid player id")
-            }
-            // console.log(videoId)
-            // Remove video from the front end
+    
             updateQueueVideos()
             callback({
                 videoId: videoId
             })
-        }
+        }}
     });
 
     // Sync video
@@ -617,12 +542,6 @@ io.sockets.on('connection', function(socket) {
         }
 
         // Auto sync with host after 1000ms of changing video
-        // NOT NEEDED ANYMORE, IN THE CHANGEVIDEOCLIENT FUNCTION
-        // setTimeout(function() {
-        //     socket.broadcast.to(host).emit('getData');
-        // }, 1000);
-
-        // console.log(io.sockets.adapter.rooms['room-1'])
     });
 
     // Change to previous video
@@ -754,7 +673,7 @@ io.sockets.on('connection', function(socket) {
     // Send Message in chat
     socket.on('send message', function(data) {
         var encodedMsg = data.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        // console.log(data);
+
         io.sockets.in("room-" + socket.roomnum).emit('new message', {
             msg: encodedMsg,
             user: socket.username
@@ -785,7 +704,6 @@ io.sockets.on('connection', function(socket) {
     // This just calls the syncHost function
     socket.on('sync host', function(data) {
         if (io.sockets.adapter.rooms['room-' + socket.roomnum] !== undefined) {
-            //socket.broadcast.to(host).emit('syncVideoClient', { time: time, state: state, videoId: videoId });
             var host = io.sockets.adapter.rooms['room-' + socket.roomnum].host
             // If not host, recall it on host
             if (socket.id != host) {
@@ -917,11 +835,6 @@ io.sockets.on('connection', function(socket) {
         async.forever(
 
             function(next) {
-                // Continuously update stream with data
-                //var time = io.sockets.in("room-"+1).emit('getTime', {});
-                //Store data in database
-                //console.log(time);
-
                 console.log("i am auto syncing")
                 socket.emit('syncHost');
 
@@ -940,8 +853,6 @@ io.sockets.on('connection', function(socket) {
     // Some update functions --------------------------------------------------
     // Update all users
     function updateUsernames() {
-        // io.sockets.emit('get users', users);
-        // console.log(users)
     }
 
     // Update the room usernames
